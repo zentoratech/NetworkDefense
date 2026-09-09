@@ -4,11 +4,39 @@ from datetime import datetime
 import sqlite3
 import os
 
+
+# =========================================================
+# FLASK APPLICATION
+# =========================================================
+
 app = Flask(__name__)
-app.secret_key = "network-defense-secure-key"
+
+# Vercel / WSGI compatibility
+application = app
+
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "network-defense-secure-key"
+)
+
+
+# =========================================================
+# DATABASE
+# =========================================================
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_DIR, "network_defense.db")
+
+
+def get_db():
+    db = sqlite3.connect(DATABASE)
+    db.row_factory = sqlite3.Row
+    return db
+
+
+# =========================================================
+# DEMO LOGIN
+# =========================================================
 
 DEMO_USER = {
     "username": "admin",
@@ -17,18 +45,16 @@ DEMO_USER = {
 
 
 # =========================================================
-# DATABASE
+# DATABASE INITIALIZATION
 # =========================================================
-
-def get_db():
-    connection = sqlite3.connect(DATABASE)
-    connection.row_factory = sqlite3.Row
-    return connection
-
 
 def init_database():
 
     db = get_db()
+
+    # =====================================================
+    # THREATS
+    # =====================================================
 
     db.execute("""
         CREATE TABLE IF NOT EXISTS threats (
@@ -43,6 +69,10 @@ def init_database():
         )
     """)
 
+    # =====================================================
+    # INCIDENTS
+    # =====================================================
+
     db.execute("""
         CREATE TABLE IF NOT EXISTS incidents (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,6 +86,10 @@ def init_database():
         )
     """)
 
+    # =====================================================
+    # SECURITY EVENTS
+    # =====================================================
+
     db.execute("""
         CREATE TABLE IF NOT EXISTS security_events (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -67,6 +101,10 @@ def init_database():
         )
     """)
 
+    # =====================================================
+    # SETTINGS
+    # =====================================================
+
     db.execute("""
         CREATE TABLE IF NOT EXISTS settings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -75,6 +113,10 @@ def init_database():
         )
     """)
 
+    # =====================================================
+    # SAMPLE THREATS
+    # =====================================================
+
     threat_count = db.execute(
         "SELECT COUNT(*) FROM threats"
     ).fetchone()[0]
@@ -82,6 +124,7 @@ def init_database():
     if threat_count == 0:
 
         sample_threats = [
+
             (
                 "THR-20481",
                 "Suspicious Connection",
@@ -91,6 +134,7 @@ def init_database():
                 "INVESTIGATING",
                 "2026-09-09 00:41:18"
             ),
+
             (
                 "THR-20477",
                 "Brute Force Pattern",
@@ -100,6 +144,7 @@ def init_database():
                 "BLOCKED",
                 "2026-09-09 00:38:04"
             ),
+
             (
                 "THR-20472",
                 "DNS Anomaly",
@@ -109,6 +154,7 @@ def init_database():
                 "MONITORING",
                 "2026-09-09 00:31:51"
             ),
+
             (
                 "THR-20468",
                 "Port Scan Activity",
@@ -118,6 +164,7 @@ def init_database():
                 "BLOCKED",
                 "2026-09-09 00:27:33"
             ),
+
             (
                 "THR-20461",
                 "Unusual Data Transfer",
@@ -127,13 +174,26 @@ def init_database():
                 "MONITORING",
                 "2026-09-09 00:21:12"
             )
+
         ]
 
         db.executemany("""
             INSERT INTO threats
-            (threat_id, name, endpoint, vector, risk, status, detected_at)
+            (
+                threat_id,
+                name,
+                endpoint,
+                vector,
+                risk,
+                status,
+                detected_at
+            )
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, sample_threats)
+
+    # =====================================================
+    # SAMPLE INCIDENTS
+    # =====================================================
 
     incident_count = db.execute(
         "SELECT COUNT(*) FROM incidents"
@@ -142,6 +202,7 @@ def init_database():
     if incident_count == 0:
 
         sample_incidents = [
+
             (
                 "INC-1042",
                 "Suspicious outbound traffic detected",
@@ -151,6 +212,7 @@ def init_database():
                 "INVESTIGATING",
                 "2026-09-09 00:41:18"
             ),
+
             (
                 "INC-1039",
                 "Authentication attack pattern",
@@ -160,6 +222,7 @@ def init_database():
                 "CONTAINED",
                 "2026-09-09 00:38:04"
             ),
+
             (
                 "INC-1036",
                 "Unexpected DNS activity",
@@ -169,6 +232,7 @@ def init_database():
                 "MONITORING",
                 "2026-09-09 00:31:51"
             ),
+
             (
                 "INC-1032",
                 "Port scanning activity",
@@ -178,34 +242,63 @@ def init_database():
                 "RESOLVED",
                 "2026-09-09 00:27:33"
             )
+
         ]
 
         db.executemany("""
             INSERT INTO incidents
-            (incident_id, title, endpoint, priority, owner, state, created_at)
+            (
+                incident_id,
+                title,
+                endpoint,
+                priority,
+                owner,
+                state,
+                created_at
+            )
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, sample_incidents)
 
-    settings = [
+    # =====================================================
+    # DEFAULT SETTINGS
+    # =====================================================
+
+    default_settings = [
+
         ("real_time_detection", 1),
         ("automatic_blocking", 1),
         ("threat_intelligence", 1),
         ("security_notifications", 1)
+
     ]
 
-    for name, enabled in settings:
+    for setting_name, enabled in default_settings:
+
         db.execute("""
             INSERT OR IGNORE INTO settings
-            (setting_name, enabled)
+            (
+                setting_name,
+                enabled
+            )
             VALUES (?, ?)
-        """, (name, enabled))
+        """, (
+            setting_name,
+            enabled
+        ))
 
     db.commit()
     db.close()
 
 
 # =========================================================
-# AUTHENTICATION
+# INITIALIZE DATABASE
+# =========================================================
+
+init_database()
+
+
+# =========================================================
+# LOGIN PROTECTION
 # =========================================================
 
 def login_required(view):
@@ -214,7 +307,10 @@ def login_required(view):
     def wrapped_view(*args, **kwargs):
 
         if "user" not in session:
-            return redirect(url_for("login"))
+
+            return redirect(
+                url_for("login")
+            )
 
         return view(*args, **kwargs)
 
@@ -222,7 +318,7 @@ def login_required(view):
 
 
 # =========================================================
-# GLOBALS
+# GLOBAL TEMPLATE VARIABLES
 # =========================================================
 
 @app.context_processor
@@ -235,13 +331,20 @@ def inject_globals():
 
 
 # =========================================================
-# PUBLIC ROUTES
+# HOME
 # =========================================================
 
 @app.route("/")
 def index():
-    return render_template("index.html")
 
+    return render_template(
+        "index.html"
+    )
+
+
+# =========================================================
+# LOGIN
+# =========================================================
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -250,19 +353,32 @@ def login():
 
     if request.method == "POST":
 
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "")
+        username = request.form.get(
+            "username",
+            ""
+        ).strip()
+
+        password = request.form.get(
+            "password",
+            ""
+        )
 
         if (
             username == DEMO_USER["username"]
-            and password == DEMO_USER["password"]
+            and
+            password == DEMO_USER["password"]
         ):
 
             session["user"] = username
 
-            return redirect(url_for("dashboard"))
+            return redirect(
+                url_for("dashboard")
+            )
 
-        error = "Invalid credentials. Please verify your username and password."
+        error = (
+            "Invalid credentials. "
+            "Please verify your username and password."
+        )
 
     return render_template(
         "login.html",
@@ -270,12 +386,18 @@ def login():
     )
 
 
+# =========================================================
+# LOGOUT
+# =========================================================
+
 @app.route("/logout")
 def logout():
 
     session.clear()
 
-    return redirect(url_for("index"))
+    return redirect(
+        url_for("index")
+    )
 
 
 # =========================================================
@@ -331,58 +453,11 @@ def dashboard():
         devices=128,
         network_health=97,
         recent_events=recent_events
-    )python app.py
-
-    db = get_db()
-
-    active_threats = db.execute("""
-        SELECT COUNT(*)
-        FROM threats
-        WHERE status != 'RESOLVED'
-    """).fetchone()[0]
-
-    critical = db.execute("""
-        SELECT COUNT(*)
-        FROM threats
-        WHERE risk = 'CRITICAL'
-        AND status != 'RESOLVED'
-    """).fetchone()[0]
-
-    blocked = db.execute("""
-        SELECT COUNT(*)
-        FROM threats
-        WHERE status = 'BLOCKED'
-    """).fetchone()[0]
-
-    incidents = db.execute("""
-        SELECT COUNT(*)
-        FROM incidents
-        WHERE state != 'RESOLVED'
-    """).fetchone()[0]
-
-    recent_events = db.execute("""
-        SELECT *
-        FROM security_events
-        ORDER BY id DESC
-        LIMIT 10
-    """).fetchall()
-
-    db.close()
-
-    return render_template(
-        "dashboard.html",
-        active_threats=active_threats,
-        critical=critical,
-        blocked=blocked,
-        incidents=incidents,
-        devices=128,
-        network_health=97,
-        recent_events=recent_events
     )
 
 
 # =========================================================
-# THREATS
+# THREAT INTELLIGENCE
 # =========================================================
 
 @app.route("/threats")
@@ -434,14 +509,16 @@ def threats():
 
 
 # =========================================================
-# NETWORK
+# NETWORK MONITOR
 # =========================================================
 
 @app.route("/network")
 @login_required
 def network():
 
-    return render_template("network.html")
+    return render_template(
+        "network.html"
+    )
 
 
 # =========================================================
@@ -530,29 +607,48 @@ def stats():
     db.close()
 
     return jsonify({
+
         "threats": active_threats,
         "critical": critical,
         "blocked": blocked,
         "devices": 128,
         "network": 97,
         "incidents": incidents
+
     })
 
 
 # =========================================================
-# API - ADD SECURITY EVENT
+# API - CREATE SECURITY EVENT
 # =========================================================
 
 @app.route("/api/events", methods=["POST"])
 @login_required
 def create_event():
 
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(
+        silent=True
+    ) or {}
 
-    event_type = data.get("event_type", "").strip()
-    message = data.get("message", "").strip()
-    endpoint = data.get("endpoint", "").strip()
-    severity = data.get("severity", "LOW").upper()
+    event_type = data.get(
+        "event_type",
+        ""
+    ).strip()
+
+    message = data.get(
+        "message",
+        ""
+    ).strip()
+
+    endpoint = data.get(
+        "endpoint",
+        ""
+    ).strip()
+
+    severity = data.get(
+        "severity",
+        "LOW"
+    ).upper()
 
     allowed_severity = [
         "LOW",
@@ -562,34 +658,54 @@ def create_event():
     ]
 
     if not event_type or not message:
+
         return jsonify({
+
             "success": False,
-            "error": "event_type and message are required"
+
+            "error": (
+                "event_type and message are required"
+            )
+
         }), 400
 
     if severity not in allowed_severity:
+
         severity = "LOW"
 
     db = get_db()
 
     db.execute("""
         INSERT INTO security_events
-        (event_type, message, endpoint, severity, created_at)
+        (
+            event_type,
+            message,
+            endpoint,
+            severity,
+            created_at
+        )
         VALUES (?, ?, ?, ?, ?)
     """, (
+
         event_type,
         message,
         endpoint,
         severity,
-        datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+
     ))
 
     db.commit()
     db.close()
 
     return jsonify({
+
         "success": True,
+
         "message": "Security event recorded"
+
     }), 201
 
 
@@ -597,26 +713,39 @@ def create_event():
 # API - UPDATE THREAT STATUS
 # =========================================================
 
-@app.route("/api/threats/<int:threat_id>", methods=["PATCH"])
+@app.route(
+    "/api/threats/<int:threat_id>",
+    methods=["PATCH"]
+)
 @login_required
 def update_threat(threat_id):
 
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(
+        silent=True
+    ) or {}
 
-    status = data.get("status", "").upper()
+    status = data.get(
+        "status",
+        ""
+    ).upper()
 
     allowed_statuses = [
+
         "INVESTIGATING",
         "MONITORING",
         "BLOCKED",
         "RESOLVED"
+
     ]
 
     if status not in allowed_statuses:
 
         return jsonify({
+
             "success": False,
+
             "error": "Invalid threat status"
+
         }), 400
 
     db = get_db()
@@ -625,7 +754,10 @@ def update_threat(threat_id):
         UPDATE threats
         SET status = ?
         WHERE id = ?
-    """, (status, threat_id))
+    """, (
+        status,
+        threat_id
+    ))
 
     db.commit()
 
@@ -636,13 +768,19 @@ def update_threat(threat_id):
     if updated == 0:
 
         return jsonify({
+
             "success": False,
+
             "error": "Threat not found"
+
         }), 404
 
     return jsonify({
+
         "success": True,
+
         "message": "Threat status updated"
+
     })
 
 
@@ -650,80 +788,124 @@ def update_threat(threat_id):
 # API - CREATE INCIDENT
 # =========================================================
 
-@app.route("/api/incidents", methods=["POST"])
+@app.route(
+    "/api/incidents",
+    methods=["POST"]
+)
 @login_required
 def create_incident():
 
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(
+        silent=True
+    ) or {}
 
-    title = data.get("title", "").strip()
-    endpoint = data.get("endpoint", "").strip()
-    priority = data.get("priority", "MEDIUM").upper()
-    owner = data.get("owner", "SOC TEAM").strip()
+    title = data.get(
+        "title",
+        ""
+    ).strip()
+
+    endpoint = data.get(
+        "endpoint",
+        ""
+    ).strip()
+
+    priority = data.get(
+        "priority",
+        "MEDIUM"
+    ).upper()
+
+    owner = data.get(
+        "owner",
+        "SOC TEAM"
+    ).strip()
 
     if not title:
 
         return jsonify({
+
             "success": False,
+
             "error": "Incident title is required"
+
         }), 400
 
     allowed_priority = [
+
         "LOW",
         "MEDIUM",
         "HIGH",
         "CRITICAL"
+
     ]
 
     if priority not in allowed_priority:
+
         priority = "MEDIUM"
 
     db = get_db()
 
-    last_id = db.execute("""
+    last_incident = db.execute("""
         SELECT id
         FROM incidents
         ORDER BY id DESC
         LIMIT 1
     """).fetchone()
 
-    next_number = 1001
+    if last_incident:
 
-    if last_id:
-        next_number = 1001 + last_id["id"]
+        next_number = (
+            1001 + last_incident["id"]
+        )
+
+    else:
+
+        next_number = 1001
 
     incident_id = f"INC-{next_number}"
 
     db.execute("""
         INSERT INTO incidents
-        (incident_id, title, endpoint, priority, owner, state, created_at)
+        (
+            incident_id,
+            title,
+            endpoint,
+            priority,
+            owner,
+            state,
+            created_at
+        )
         VALUES (?, ?, ?, ?, ?, ?, ?)
     """, (
+
         incident_id,
         title,
         endpoint or "Unknown endpoint",
         priority,
         owner or "SOC TEAM",
         "INVESTIGATING",
-        datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+
     ))
 
     db.commit()
     db.close()
 
     return jsonify({
+
         "success": True,
+
         "incident_id": incident_id
+
     }), 201
 
 
 # =========================================================
-# STARTUP
+# LOCAL DEVELOPMENT
 # =========================================================
 
 if __name__ == "__main__":
-
-    init_database()
 
     print("")
     print("==============================================")
@@ -734,4 +916,6 @@ if __name__ == "__main__":
     print("==============================================")
     print("")
 
-    app.run(debug=True)
+    app.run(
+        debug=True
+    )
