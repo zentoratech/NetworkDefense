@@ -25,7 +25,14 @@ app.secret_key = os.environ.get(
 # =========================================================
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE = os.path.join(BASE_DIR, "network_defense.db")
+
+if os.environ.get("VERCEL"):
+    DATABASE = "/tmp/network_defense.db"
+else:
+    DATABASE = os.path.join(
+        BASE_DIR,
+        "network_defense.db"
+    )
 
 
 def get_db():
