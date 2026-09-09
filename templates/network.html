@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Network Monitor | Network Defense{% endblock %}
+{% block breadcrumb %}Network Monitor{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <div class="eyebrow">NETWORK OPERATIONS</div>
+        <h1>Infrastructure Monitor</h1>
+        <p>Real-time overview of monitored network infrastructure.</p>
+    </div>
+
+    <div class="header-status">
+        <span class="status-dot"></span>
+        128 DEVICES ONLINE
+    </div>
+
+</div>
+
+<div class="network-overview">
+
+    <div class="network-visual panel">
+
+        <div class="panel-header">
+            <div>
+                <span class="panel-kicker">TOPOLOGY</span>
+                <h2>Network Environment</h2>
+            </div>
+        </div>
+
+        <div class="network-map">
+
+            <div class="network-node core-node">
+                <span></span>
+                <strong>CORE</strong>
+                <small>SECURITY GATEWAY</small>
+            </div>
+
+            <div class="connection connection-one"></div>
+            <div class="connection connection-two"></div>
+            <div class="connection connection-three"></div>
+            <div class="connection connection-four"></div>
+
+            <div class="network-node node-one">
+                <span></span>
+                <strong>SEGMENT A</strong>
+                <small>42 DEVICES</small>
+            </div>
+
+            <div class="network-node node-two">
+                <span></span>
+                <strong>SEGMENT B</strong>
+                <small>31 DEVICES</small>
+            </div>
+
+            <div class="network-node node-three">
+                <span></span>
+                <strong>SEGMENT C</strong>
+                <small>28 DEVICES</small>
+            </div>
+
+            <div class="network-node node-four">
+                <span></span>
+                <strong>DMZ</strong>
+                <small>27 DEVICES</small>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="panel network-health">
+
+        <div class="panel-header">
+            <div>
+                <span class="panel-kicker">HEALTH</span>
+                <h2>Infrastructure Status</h2>
+            </div>
+        </div>
+
+        <div class="health-item">
+            <div>
+                <strong>Core Gateway</strong>
+                <span>Latency 12ms</span>
+            </div>
+            <b>99.9%</b>
+        </div>
+
+        <div class="health-item">
+            <div>
+                <strong>Segment A</strong>
+                <span>42 endpoints</span>
+            </div>
+            <b>99.7%</b>
+        </div>
+
+        <div class="health-item">
+            <div>
+                <strong>Segment B</strong>
+                <span>31 endpoints</span>
+            </div>
+            <b>98.9%</b>
+        </div>
+
+        <div class="health-item">
+            <div>
+                <strong>Segment C</strong>
+                <span>28 endpoints</span>
+            </div>
+            <b>99.8%</b>
+        </div>
+
+        <div class="health-item">
+            <div>
+                <strong>DMZ</strong>
+                <span>27 endpoints</span>
+            </div>
+            <b>99.4%</b>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
