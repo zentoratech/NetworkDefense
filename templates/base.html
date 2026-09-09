@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Network Defense{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+{% if session.get("user") %}
+
+<div class="app-shell">
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-mark">
+                ND
+            </div>
+
+            <div>
+                <div class="brand-name">NETWORK</div>
+                <div class="brand-sub">DEFENSE</div>
+            </div>
+        </div>
+
+        <div class="system-status">
+            <span class="status-dot"></span>
+            <div>
+                <strong>SYSTEM ONLINE</strong>
+                <small>All systems operational</small>
+            </div>
+        </div>
+
+        <nav class="navigation">
+
+            <div class="nav-label">COMMAND CENTER</div>
+
+            <a href="{{ url_for('dashboard') }}"
+               class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                <span class="nav-icon">01</span>
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('threats') }}"
+               class="nav-item {% if request.endpoint == 'threats' %}active{% endif %}">
+                <span class="nav-icon">02</span>
+                Threat Intelligence
+            </a>
+
+            <a href="{{ url_for('network') }}"
+               class="nav-item {% if request.endpoint == 'network' %}active{% endif %}">
+                <span class="nav-icon">03</span>
+                Network Monitor
+            </a>
+
+            <a href="{{ url_for('incidents') }}"
+               class="nav-item {% if request.endpoint == 'incidents' %}active{% endif %}">
+                <span class="nav-icon">04</span>
+                Incidents
+            </a>
+
+            <div class="nav-label second">MANAGEMENT</div>
+
+            <a href="{{ url_for('settings') }}"
+               class="nav-item {% if request.endpoint == 'settings' %}active{% endif %}">
+                <span class="nav-icon">05</span>
+                Settings
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="operator-card">
+                <div class="operator-avatar">
+                    {{ username[0]|upper }}
+                </div>
+
+                <div class="operator-info">
+                    <strong>{{ username|capitalize }}</strong>
+                    <span>Security Operator</span>
+                </div>
+
+                <a href="{{ url_for('logout') }}" class="logout-button">
+                    Exit
+                </a>
+            </div>
+
+            <div class="version">
+                NDF CORE v2.4.1
+            </div>
+
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+                <span class="breadcrumb">SECURITY OPERATIONS</span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">
+                    {% block breadcrumb %}Dashboard{% endblock %}
+                </span>
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="live-indicator">
+                    <span></span>
+                    LIVE MONITORING
+                </div>
+
+                <div class="topbar-time" id="currentTime">
+                    --:--:--
+                </div>
+
+            </div>
+
+        </header>
+
+        <section class="page-content">
+            {% block content %}{% endblock %}
+        </section>
+
+    </main>
+
+</div>
+
+{% else %}
+
+{% block public_content %}{% endblock %}
+
+{% endif %}
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

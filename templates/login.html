@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Secure Access | Network Defense{% endblock %}
+
+{% block public_content %}
+
+<div class="login-page">
+
+    <div class="login-background"></div>
+
+    <div class="login-panel">
+
+        <div class="login-brand">
+            <div class="brand-mark">ND</div>
+
+            <div>
+                <div class="brand-name">NETWORK</div>
+                <div class="brand-sub">DEFENSE</div>
+            </div>
+        </div>
+
+        <div class="login-heading">
+            <span>SECURITY CONSOLE</span>
+            <h1>Secure Access</h1>
+            <p>
+                Authenticate to access the Network Defense operations center.
+            </p>
+        </div>
+
+        {% if error %}
+        <div class="login-error">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="login-form">
+
+            <label>
+                Operator ID
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Enter operator ID"
+                    autocomplete="username"
+                    required
+                >
+            </label>
+
+            <label>
+                Access Key
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter access key"
+                    autocomplete="current-password"
+                    required
+                >
+            </label>
+
+            <button type="submit" class="login-submit">
+                Authenticate
+                <span>→</span>
+            </button>
+
+        </form>
+
+        <div class="login-security">
+
+            <span class="status-dot"></span>
+
+            <div>
+                <strong>SECURE CHANNEL</strong>
+                <small>Encrypted console connection</small>
+            </div>
+
+        </div>
+
+        <div class="demo-credentials">
+            Demo access: <strong>admin</strong> / <strong>admin123</strong>
+        </div>
+
+        <a href="{{ url_for('index') }}" class="back-home">
+            ← Return to Network Defense
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

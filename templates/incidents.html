@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Incidents | Network Defense{% endblock %}
+{% block breadcrumb %}Incidents{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <div class="eyebrow">INCIDENT RESPONSE</div>
+        <h1>Security Incidents</h1>
+        <p>Centralized incident tracking and response operations.</p>
+    </div>
+
+    <button class="button-primary small-button">
+        Create Incident
+    </button>
+
+</div>
+
+<div class="incident-grid">
+
+    <div class="incident-card critical-card">
+        <span class="incident-label">CRITICAL</span>
+        <strong>04</strong>
+        <p>Requires immediate response</p>
+    </div>
+
+    <div class="incident-card high-card">
+        <span class="incident-label">HIGH PRIORITY</span>
+        <strong>08</strong>
+        <p>Active investigation required</p>
+    </div>
+
+    <div class="incident-card open-card">
+        <span class="incident-label">OPEN INCIDENTS</span>
+        <strong>12</strong>
+        <p>Currently being investigated</p>
+    </div>
+
+</div>
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <span class="panel-kicker">RESPONSE QUEUE</span>
+            <h2>Active Incidents</h2>
+        </div>
+    </div>
+
+    <div class="incident-list">
+
+        <div class="incident-row">
+            <div class="incident-id">INC-1042</div>
+
+            <div class="incident-details">
+                <strong>Suspicious outbound traffic detected</strong>
+                <span>Endpoint ND-042 · Network perimeter</span>
+            </div>
+
+            <div class="incident-priority critical-text">
+                CRITICAL
+            </div>
+
+            <div class="incident-owner">
+                SOC TEAM
+            </div>
+
+            <div class="incident-state">
+                INVESTIGATING
+            </div>
+        </div>
+
+        <div class="incident-row">
+            <div class="incident-id">INC-1039</div>
+
+            <div class="incident-details">
+                <strong>Authentication attack pattern</strong>
+                <span>Gateway GW-001 · Authentication service</span>
+            </div>
+
+            <div class="incident-priority high-text">
+                HIGH
+            </div>
+
+            <div class="incident-owner">
+                SOC TEAM
+            </div>
+
+            <div class="incident-state">
+                CONTAINED
+            </div>
+        </div>
+
+        <div class="incident-row">
+            <div class="incident-id">INC-1036</div>
+
+            <div class="incident-details">
+                <strong>Unexpected DNS activity</strong>
+                <span>Endpoint ND-087 · DNS service</span>
+            </div>
+
+            <div class="incident-priority medium-text">
+                MEDIUM
+            </div>
+
+            <div class="incident-owner">
+                ANALYST 04
+            </div>
+
+            <div class="incident-state">
+                MONITORING
+            </div>
+        </div>
+
+        <div class="incident-row">
+            <div class="incident-id">INC-1032</div>
+
+            <div class="incident-details">
+                <strong>Port scanning activity</strong>
+                <span>Network segment C · External source</span>
+            </div>
+
+            <div class="incident-priority high-text">
+                HIGH
+            </div>
+
+            <div class="incident-owner">
+                SOC TEAM
+            </div>
+
+            <div class="incident-state">
+                RESOLVED
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

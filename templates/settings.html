@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Settings | Network Defense{% endblock %}
+{% block breadcrumb %}Settings{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <div class="eyebrow">SYSTEM CONFIGURATION</div>
+        <h1>Security Settings</h1>
+        <p>Manage monitoring and operational preferences.</p>
+    </div>
+
+</div>
+
+<div class="settings-grid">
+
+    <div class="panel settings-panel">
+
+        <div class="panel-header">
+            <div>
+                <span class="panel-kicker">MONITORING</span>
+                <h2>Detection Configuration</h2>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div>
+                <strong>Real-time threat detection</strong>
+                <span>Analyze security telemetry continuously.</span>
+            </div>
+
+            <div class="toggle active">
+                <span></span>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div>
+                <strong>Automatic event blocking</strong>
+                <span>Block confirmed malicious network events.</span>
+            </div>
+
+            <div class="toggle active">
+                <span></span>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div>
+                <strong>Threat intelligence synchronization</strong>
+                <span>Keep intelligence feeds synchronized.</span>
+            </div>
+
+            <div class="toggle active">
+                <span></span>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div>
+                <strong>Security notifications</strong>
+                <span>Notify operators about high-priority events.</span>
+            </div>
+
+            <div class="toggle active">
+                <span></span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="panel settings-panel">
+
+        <div class="panel-header">
+            <div>
+                <span class="panel-kicker">SYSTEM</span>
+                <h2>Environment</h2>
+            </div>
+        </div>
+
+        <div class="environment-list">
+
+            <div>
+                <span>Platform Version</span>
+                <strong>NDF Core 2.4.1</strong>
+            </div>
+
+            <div>
+                <span>Detection Engine</span>
+                <strong>Active</strong>
+            </div>
+
+            <div>
+                <span>Telemetry Status</span>
+                <strong>Receiving</strong>
+            </div>
+
+            <div>
+                <span>Threat Feed</span>
+                <strong>Synchronized</strong>
+            </div>
+
+            <div>
+                <span>Last System Sync</span>
+                <strong>22:41:32</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
